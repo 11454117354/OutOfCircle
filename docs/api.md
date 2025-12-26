@@ -80,12 +80,17 @@ DELETE /api/tasks/<task_id>
 
 POST /api/category/create
 - Add a category
+    ```json
+    {
+        "name": "personal",
+        "color": "#2274F8"
+    }
 
 GET /api/categories/<category_id>
 - Get info of a category
 
 GET /api/categories/all
-- Get info of all category
+- Get info of all categories
 
-DELETE /api/categories/<category_id>
-- Delete a category
+DELETE /api/categories/<category_id>/<distination_id>
+- Delete a category, and choose either to put all tasks in another existing category or delete them

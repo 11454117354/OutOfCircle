@@ -367,9 +367,36 @@ class ViewAllCategory(Resource):
         categories = CategoryModel.query.filter_by(user_id=user_id).all()
         return categories
     
+class DeleteCategory(Resource):
+    @login_required
+    def delete(self, category_id, destination_id):
+        # Delete a category, and choose either to put all tasks in another existing category or to delete them(destination_id = 0)
+        user_id = session.get('user_id')
+        if destination_id == 0:
+            tasks = TaskModel.query.filter_by(category_id=category_id, user_id=user_id).all()
+            for task in tasks:
+                db.session.delete(task)
+        elif destination_id > 0:
+            dest_category = CategoryModel.query.filter_by(id=destination_id, user_id=user_id).first()
+            if not dest_category:
+                abort(404, message="Destination category not found")
+            tasks = TaskModel.query.filter_by(category_id=category_id, user_id=user_id).all()
+            for task in tasks:
+                task.category_id = destination_id
+        else:
+            abort(400, message="Destination id should not be negative")
+        category = CategoryModel.query.filter_by(id=category_id, user_id=user_id).first()
+        if not category:
+            abort(404, "Category not found")
+        db.session.delete(category)
+        db.session.commit()
+        return {"message": "Category has been deleted"}, 200
+        
+    
 api.add_resource(CreateCategory, '/api/category/create/')
 api.add_resource(ViewCategory, '/api/categories/<int:category_id>/')
 api.add_resource(ViewAllCategory, '/api/categories/all/')
+api.add_resource(DeleteCategory, '/api/categories/<int:category_id>/<int:destination_id>/')
 
 # -------------------
 #  Call the Program

@@ -15,7 +15,7 @@ POST /api/login
 - User login
     ```json
     {
-        "username": "096",
+        "username": "chen",
         "password": "1"
     }
 
@@ -33,11 +33,14 @@ POST /api/week/create
     {
     "name": "week1",
     "start_time": "2025-12-26T15:30:00",
-    "end_time": "2025-12-26T16:30:00",
+    "end_time": "2025-12-26T16:30:00"
     }
 
 GET /api/weeks/<week_id>
 - Get specific week name and info
+
+GET /api/weeks/last
+- Get the last week the user has ever viewed
 
 ## Tasks
 

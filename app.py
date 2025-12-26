@@ -36,6 +36,7 @@ class UserModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     hash = db.Column(db.String(80))
+    last_week_id = db.Column(db.Integer, nullable=True)
 
     def __repr__(self):
         return f"User(username = {self.username}, hash = {self.hash})"
@@ -146,8 +147,11 @@ class CreateWeek(Resource):
         # Create a new "week"
         user_id = session.get('user_id')
         args = week_args.parse_args()
-        start_time = datetime.fromisoformat(args['start_time'])
-        end_time = datetime.fromisoformat(args['end_time'])
+        try:
+            start_time = datetime.fromisoformat(args['start_time'])
+            end_time = datetime.fromisoformat(args['end_time'])
+        except ValueError:
+            abort(400, message="Invalid datetime format")
         if end_time <= start_time:
             abort(400, message="End time must be later than start time")
         week = WeekModel(name=args['name'], start_time=start_time, end_time=end_time, user_id=user_id)
@@ -164,10 +168,26 @@ class ViewWeek(Resource):
         week = WeekModel.query.filter_by(id=week_id, user_id=user_id).first()
         if not week:
             abort(404, message="Week not found")
+        # Remember "lastly_view"
+        user = UserModel.query.get(user_id)
+        user.last_week_id = week_id
+        db.session.commit()
         return week
+    
+class LastView(Resource):
+    @login_required
+    def get(self):
+        # Get the last week the user has ever viewed
+        user_id = session.get('user_id')
+        user = UserModel.query.get(user_id)
+        if not user.last_week_id:
+            # return {"last_week_id": None}
+            abort(404, message="not found")
+        return {"last_week_id": user.last_week_id}
     
 api.add_resource(CreateWeek, '/api/week/create')
 api.add_resource(ViewWeek, '/api/weeks/<int:week_id>')
+api.add_resource(LastView, "/api/weeks/last")
 
 
 # -------------------

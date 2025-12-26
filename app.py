@@ -3,7 +3,12 @@ from flask import Flask, session
 from flask_session import Session
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Resource, Api, reqparse, fields, marshal_with, abort
+from functools import wraps
 from werkzeug.security import check_password_hash, generate_password_hash
+
+# --------
+#  Boomer
+# --------
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -13,6 +18,15 @@ Session(app)
 
 db = SQLAlchemy(app)
 api = Api(app)
+
+def login_required(fn):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        user_id = session.get('user_id')
+        if not user_id:
+            abort(401, message="Not logged in")
+        return fn(*args, **kwargs)
+    return wrapper
 
 # --------------------
 #  Database Settings
@@ -76,9 +90,9 @@ login_args.add_argument('username', type=str, required=True)
 login_args.add_argument('password', type=str, required=True)
 
 class Login(Resource):
-    @marshal_with(userFields)
     def post(self):
         # login
+        session.pop("user_id", None)
         args = login_args.parse_args()
         user = UserModel.query.filter_by(username=args['username']).first()
         if not user or not check_password_hash(user.hash, args['password']):
@@ -88,22 +102,19 @@ class Login(Resource):
         return {"message": "Logged in successfully"}, 200
     
 class Me(Resource):
+    @login_required
     @marshal_with(userFields)
     def get(self):
-        # Get user info
+        # Get user info      
         user_id = session.get('user_id')
-        if not user_id:
-            abort(401, message="Not logged in")        
         user = UserModel.query.get(user_id)
         return user
     
 class Logout(Resource):
+    @login_required
     @marshal_with(userFields)
     def post(self):
         # logout
-        user_id = session.get('user_id')
-        if not user_id:
-            abort(401, message="Not logged in")
         session.pop("user_id", None)
         return {"message": "Logged out successfully"}, 200
 
@@ -129,12 +140,11 @@ weekFields = {
 }
 
 class CreateWeek(Resource):
+    @login_required
     @marshal_with(weekFields)
     def post(self):
         # Create a new "week"
         user_id = session.get('user_id')
-        if not user_id:
-            abort(401, message="Not logged in")
         args = week_args.parse_args()
         start_time = datetime.fromisoformat(args['start_time'])
         end_time = datetime.fromisoformat(args['end_time'])
@@ -145,7 +155,19 @@ class CreateWeek(Resource):
         db.session.commit()
         return week, 201
     
+class ViewWeek(Resource):
+    @login_required
+    @marshal_with(weekFields)
+    def get(self, week_id):
+        # Get week info
+        user_id = session.get('user_id')
+        week = WeekModel.query.filter_by(id=week_id, user_id=user_id).first()
+        if not week:
+            abort(404, message="Week not found")
+        return week
+    
 api.add_resource(CreateWeek, '/api/week/create')
+api.add_resource(ViewWeek, '/api/weeks/<int:week_id>')
 
 
 # -------------------

@@ -42,7 +42,7 @@ GET /api/weeks/<week_id>
 GET /api/weeks/last
 - Get the last week the user has ever viewed
 
-DELETE /api/weeks/delete
+DELETE /api/weeks/<week_id>
 - Delete a week
 
 ## Tasks
@@ -66,7 +66,7 @@ PATCH /api/task/<task_id>/time
         "end_time":"2025-12-29T13:00:00"
     }
 
-GET /api/tasks/<task_id>
+GET /api/task/<task_id>
 - Get a certain task
 
 GET /api/weeks/<week_id>/tasks
@@ -74,6 +74,13 @@ GET /api/weeks/<week_id>/tasks
 
 GET /api/categories/<category_id>/tasks
 - Get tasks from a category
+
+PATCH /api/task/<task_id>/status
+- Mark the task as finished/unfinished
+    ```json
+    {
+        "finished": True
+    }
 
 DELETE /api/tasks/<task_id>
 - Delete a task

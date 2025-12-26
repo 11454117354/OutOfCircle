@@ -53,6 +53,7 @@ class TaskModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     ddl = db.Column(db.DateTime, nullable=False)
+    finished = db.Column(db.Boolean, default=False, nullable=False)
     start_time = db.Column(db.DateTime, nullable=True) # YYYY-MM-DDTHH:MM:SS
     end_time = db.Column(db.DateTime, nullable=True)
     remark = db.Column(db.String(200), nullable=True)
@@ -219,6 +220,7 @@ api.add_resource(DeleteWeek, '/api/weeks/<int:week_id>/')
 task_args = reqparse.RequestParser()
 task_args.add_argument('title', type=str, required=True, help="Title cannot be blank")
 task_args.add_argument('ddl', type=str, required=True, help="Deadline cannot be blank")
+task_args.add_argument('finished', type=bool, required=False, help="Enter the status of task")
 task_args.add_argument('start_time', type=str, required=False, help="Enter the start time")
 task_args.add_argument('end_time', type=str, required=False, help="Enter the end time")
 task_args.add_argument('category_id', type=str, required=True, help="Category cannot be blank")
@@ -229,6 +231,7 @@ taskFields = {
     'id':fields.Integer,
     'title':fields.String,
     'ddl':fields.String,
+    'finished':fields.Boolean,
     'start_time':fields.String,
     'end_time':fields.String,
     'category_id':fields.Integer,
@@ -303,7 +306,7 @@ class ViewWeekTask(Resource):
         if not week:
             abort(404, message="Week not found")
         if user_id != week.user_id:
-            abort(400, message="The week not belong to the user")
+            abort(404, message="Week not found")
         tasks =  TaskModel.query.filter_by(week_id=week_id, user_id=user_id).order_by(TaskModel.ddl.asc()).all()
         return tasks
     
@@ -317,9 +320,30 @@ class  ViewCategoryTask(Resource):
         if not category:
             abort(404, message="Category not found")
         if user_id != category.user_id:
-            abort(400, message="The week not belong to the user")
+            abort(404, message="Category not found")
         tasks =  TaskModel.query.filter_by(category_id=category_id, user_id=user_id).order_by(TaskModel.ddl.asc()).all()
         return tasks
+    
+class TaskStatus(Resource):
+    @login_required
+    def patch(self, task_id):
+        # Mark the task as finished/unfinished
+        task_status_args = reqparse.RequestParser()
+        task_status_args.add_argument('finished', type=bool, required=True, help="Enter the status of task")
+        user_id = session.get('user_id')
+        task = TaskModel.query.filter_by(id=task_id, user_id=user_id).first()
+        if not task:
+            abort(404, message="Task not found")
+        args = task_status_args.parse_args()
+        if args['finished'] == True:
+            task.finished = True
+            db.session.commit()
+            return {"message": "Status changed to finished"}, 200
+        elif args['finished'] == False:
+            task.finished = False
+            db.session.commit()
+            return {"message": "Status changed to unfinished"}, 200
+        
     
 class DeleteTask(Resource):
     @login_required
@@ -338,6 +362,7 @@ api.add_resource(SetTaskTime, '/api/task/<int:task_id>/time/')
 api.add_resource(ViewTask, '/api/task/<int:task_id>/')
 api.add_resource(ViewWeekTask, '/api/weeks/<int:week_id>/tasks/')
 api.add_resource(ViewCategoryTask, '/api/categories/<int:category_id>/tasks/')
+api.add_resource(TaskStatus, '/api/task/<int:task_id>/status/')
 api.add_resource(DeleteTask, '/api/tasks/<int:task_id>/')
 
 # -----------------
@@ -363,7 +388,7 @@ class CreateCategory(Resource):
         args = category_args.parse_args()
         color = args['color']
         if not re.match(r'^#([0-9a-fA-F]{6})$', color):
-            raise ValueError("Invalid color format")
+            abort(400, message="Invalid color format")
         category = CategoryModel(name=args['name'], color=color, user_id=user_id)
         db.session.add(category)
         db.session.commit()

@@ -196,6 +196,10 @@ class DeleteWeek(Resource):
         # Delete week
         user_id = session.get('user_id')
         week = WeekModel.query.filter_by(id=week_id, user_id=user_id).first()
+        tasks = TaskModel.query.filter_by(week_id=week_id, user_id=user_id).all()
+        if tasks:
+            for task in tasks:
+                db.session.delete(task)
         if not week:
             abort(404, message="Week not found")
         db.session.delete(week)
@@ -296,11 +300,24 @@ class ViewWeekTask(Resource):
             abort(400, "The week not belong to the user")
         tasks =  TaskModel.query.filter_by(week_id=week_id, user_id=user_id).order_by(TaskModel.ddl.asc()).all()
         return tasks
+    
+class DeleteTask(Resource):
+    @login_required
+    def delete(self, task_id):
+        # Delete a task
+        user_id = session.get('user_id')
+        task = TaskModel.query.filter_by(id=task_id, user_id=user_id).first()
+        if not task:
+            abort(404, "Task not found")
+        db.session.delete(task)
+        db.session.commit()
+        return {"message": "Task already deleted"}, 200
 
 api.add_resource(CreateTask, '/api/task/create/')
 api.add_resource(SetTaskTime, '/api/task/<int:task_id>/time/')
 api.add_resource(ViewTask, '/api/task/<int:task_id>/')
 api.add_resource(ViewWeekTask, '/api/weeks/<int:week_id>/tasks')
+api.add_resource(DeleteTask, '/api/tasks/<int:task_id>')
 
 # -------------------
 #  Call the Program

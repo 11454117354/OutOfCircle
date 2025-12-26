@@ -2,7 +2,7 @@
 
 ## User
 
-POST /api/users
+POST /api/register
 - Get users registered
 
 POST /api/login
@@ -16,21 +16,16 @@ POST /api/logout
 
 ## Weeks
 
+POST /api/week/create
+- Create a new "week"
+
 GET /api/weeks/current
-- Get current week data
+- Get current week name and info
 
 ## Tasks
 
 POST /api/tasks
-- Create a new task
+- Create a new task in specific week
 
 GET /api/weeks/<week_id>/tasks
 - Get tasks for a week
-
-## Schedules
-
-POST /api/schedules
-- Assign time block to a task
-
-DELETE /api/schedules/<id>
-- Remove a scheduled time block

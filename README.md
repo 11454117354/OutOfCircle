@@ -10,15 +10,14 @@ I wanted to create a tool that fits my owm study habits: managing deadlines and 
 - User authentication
 - View tasks and deadlines by week
 - Add deadlines with due dates and estimated time
-- Assign specific time blocks to tasks within a week
-- Auto-delaying for unfinished work to the next week
+- Assign specific time to task blocks within a week
 
 ## Tech Stack
 
 - Backend: Flask(Python)
 - Database: SQLite
 - Frontend: HTML, CSS, Javascript, Jinja2
-- API: REST-style JSON APIs
+- API: RESTful API
 
 ## How to Run
 
@@ -35,6 +34,7 @@ I wanted to create a tool that fits my owm study habits: managing deadlines and 
 5. Open the browser at http://127.0.0.1:5000
    
 ## Future Improvememts
+- Auto-delaying for unfinished work to the next week
 - iOS client using the same API
 - Visually-appealing calender with task blocks and class schedule
 - A build-in focus timer 

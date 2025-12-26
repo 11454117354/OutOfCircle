@@ -18,7 +18,13 @@ POST /api/logout
 
 POST /api/week/create
 - Create a new "week"
-
+    ```json
+    {
+    "name": "week1",
+    "start_time": "2025-12-26T15:30:00",
+    "end_time": "2025-12-26T16:30:00",
+    }
+    
 GET /api/weeks/current
 - Get current week name and info
 

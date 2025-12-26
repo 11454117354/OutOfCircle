@@ -76,6 +76,7 @@ login_args.add_argument('username', type=str, required=True)
 login_args.add_argument('password', type=str, required=True)
 
 class Login(Resource):
+    @marshal_with(userFields)
     def post(self):
         # login
         args = login_args.parse_args()
@@ -97,6 +98,7 @@ class Me(Resource):
         return user
     
 class Logout(Resource):
+    @marshal_with(userFields)
     def post(self):
         # logout
         user_id = session.get('user_id')
@@ -114,7 +116,41 @@ api.add_resource(Logout, '/api/logout/')
 #  Main Functionality
 # --------------------
 
+week_args = reqparse.RequestParser()
+week_args.add_argument('name', type=str, required=False, help="The name of the week")
+week_args.add_argument('start_time', type=str, required=True, help="Start time cannot be blank")
+week_args.add_argument('end_time', type=str, required=True, help="End time cannot be blank")
 
+weekFields = {
+    'id': fields.Integer,
+    'name': fields.String,
+    'start_time': fields.String,
+    'end_time': fields.String
+}
+
+class CreateWeek(Resource):
+    @marshal_with(weekFields)
+    def post(self):
+        # Create a new "week"
+        user_id = session.get('user_id')
+        if not user_id:
+            abort(401, message="Not logged in")
+        args = week_args.parse_args()
+        start_time = datetime.fromisoformat(args['start_time'])
+        end_time = datetime.fromisoformat(args['end_time'])
+        if end_time <= start_time:
+            abort(400, message="End time must be later than start time")
+        week = WeekModel(name=args['name'], start_time=start_time, end_time=end_time, user_id=user_id)
+        db.session.add(week)
+        db.session.commit()
+        return week, 201
+    
+api.add_resource(CreateWeek, '/api/week/create')
+
+
+# -------------------
+#  Call the Program
+# -------------------
 
 if __name__ == '__main__':
     app.run(debug=True)

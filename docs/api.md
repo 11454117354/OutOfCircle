@@ -132,7 +132,7 @@ PATCH /api/categories/<category_id>/rename
     ```json
     {
         "name": "test1",
-        "color": "#2349384"
+        "color": "#234938"
     }
 
 DELETE /api/categories/<category_id>/<destination_id>

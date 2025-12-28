@@ -32,20 +32,49 @@
             renameBtn.addEventListener("click", e => {
                 e.stopPropagation();
 
-                const newName = prompt("Enter new category name", category.name);
-                if (!newName) return;
+                const template = document.getElementById("category-modal-template");
+                const modal = template.cloneNode(true);
+                modal.id = "";
+                modal.style.display = "flex";
+                document.body.appendChild(modal);
 
-                fetch(`/api/categories/${category.id}/edit/`, {
-                    method: "PATCH",
-                    credentials: "same-origin",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ name: newName })
-                })
-                .then(res => {
-                    if (!res.ok) throw new Error();
-                    location.reload();
-                })
-                .catch(() => alert("Error renaming category"));
+                modal.querySelector("#modal-title").innerText = "Rename Category";
+                const nameInput = modal.querySelector(".popup-category-name");
+                const colorInput = modal.querySelector(".popup-category-color");
+                nameInput.value = category.name;
+                colorInput.value = category.color;
+
+                modal.querySelector(".popup-cancel").onclick = () => modal.remove();
+
+                modal.querySelector(".popup-confirm").onclick = async () => {
+                    const newName = nameInput.value.trim();
+                    const newColor = colorInput.value;
+
+                    if (!newName) {
+                        alert("Please fill in a name");
+                        return;
+                    }
+
+                    if (!newColor) {
+                        alert("Please select a color");
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`/api/categories/${category.id}/edit/`, {
+                            method: "PATCH",
+                            credentials: "same-origin",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({ name: newName, color: newColor })
+                        });
+
+                        if (!response.ok) throw new Error();
+                        modal.remove();
+                        location.reload();
+                    } catch {
+                        alert("Error renaming category");
+                    }
+                };
             });
 
             /* ---------- Delete ---------- */
@@ -92,27 +121,47 @@
 
 /* ---------- Add New Category ---------- */
 const newCategoryForm = document.getElementById("newCategory");
+const categoryList = document.getElementById("category-list");
 
-newCategoryForm.addEventListener("submit", async e => {
+newCategoryForm.addEventListener("submit", e => {
     e.preventDefault();
 
-    const name = prompt("Category name:");
-    if (!name) return;
+    const template = document.getElementById("category-modal-template");
+    const modal = template.cloneNode(true);
+    modal.id = "";                // 去掉 id
+    modal.style.display = "flex"; // 显示弹窗
+    document.body.appendChild(modal);
 
-    const color = prompt("Category color (e.g. #2274F8):", "#2274F8");
-    if (!color) return;
+    modal.querySelector("#modal-title").innerText = "New Category";
+    const nameInput = modal.querySelector(".popup-category-name");
+    const colorInput = modal.querySelector(".popup-category-color");
+    nameInput.value = "";
+    colorInput.value = "#2274F8";
 
-    try {
-        const response = await fetch("/api/category/create", {
-            method: "POST",
-            credentials: "same-origin",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, color })
-        });
+    modal.querySelector(".popup-cancel").onclick = () => modal.remove();
 
-        if (!response.ok) throw new Error();
-        location.reload();
-    } catch {
-        alert("Error creating category");
-    }
+    modal.querySelector(".popup-confirm").onclick = async () => {
+        const name = nameInput.value.trim();
+        const color = colorInput.value;
+
+        if (!name) {
+            alert("Please fill in a name");
+            return;
+        }
+
+        try {
+            const response = await fetch("/api/category/create", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, color })
+            });
+
+            if (!response.ok) throw new Error("Failed to create category");
+            modal.remove();
+            location.reload();
+        } catch {
+            alert("Error creating category");
+        }
+    };
 });

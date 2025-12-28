@@ -493,7 +493,7 @@ class EditCategory(Resource):
         category = CategoryModel.query.filter_by(id=category_id, user_id=user_id).first()
         if not category:
             abort(404, message="Category not found")
-        args = week_args.parse_args()
+        args = category_args.parse_args()
         category.name = args['name']
         category.color = args['color']
         db.session.commit()

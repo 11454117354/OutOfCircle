@@ -35,7 +35,7 @@ I wanted to create a tool that fits my owm study habits: managing deadlines and 
    
 ## Future Improvememts
 - Tear down the app.py into smaller ones
-- Change username, week name, password.etc
+- Change username, password.etc
 - Change pages, soft delete, logging...
 - Auto-delaying for unfinished work to the next week
 - iOS client using the same API

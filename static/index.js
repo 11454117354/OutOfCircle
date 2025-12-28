@@ -253,7 +253,7 @@ function renderTasks(tasks) {
 
     tasks.forEach(task => {
         const item = document.createElement("div");
-        item.className = "task-item";
+        item.className = "task-item todo-item";
         const category = categoriesCache.find(c => c.id === task.category_id);
         item.style.borderLeft = `4px solid ${category ? category.color : "#ccc"}`;
 
@@ -262,9 +262,11 @@ function renderTasks(tasks) {
 
         const editBtn = document.createElement("button");
         editBtn.innerText = "E";
+        editBtn.classList.add("task-edit-btn");
 
         const deleteBtn = document.createElement("button");
         deleteBtn.innerText = "D";
+        deleteBtn.classList.add("task-delete-btn");
 
         editBtn.onclick = e => {
             e.stopPropagation();

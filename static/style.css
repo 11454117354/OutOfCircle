@@ -346,3 +346,83 @@ button:hover {
     display: flex;
     flex-direction: column;
 }
+
+
+/* ---------- Task List UI Polish ---------- */
+
+/* 单条 task */
+.task-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;                 /* title 与左边色条的距离 */
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    background-color: white;
+    border-radius: 6px;
+    position: relative;
+    transition: background-color 0.2s;
+}
+
+/* hover 时灰色背景 */
+.task-item:hover {
+    background-color: #f0f0f0;
+}
+
+/* task 左边色条已经由 JS 设置 border-left */
+
+/* task 标题 */
+.task-item span {
+    flex: 1;                  /* 占满中间空间 */
+}
+
+/* 编辑 / 删除按钮：默认隐藏 */
+.task-edit-btn,
+.task-delete-btn {
+    background: none;
+    border: none;
+    padding: 2px 6px;
+    margin-left: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: opacity 0.2s, background-color 0.2s;
+    border-radius: 4px;
+}
+
+/* hover task 时才显示 */
+.task-item:hover .task-edit-btn,
+.task-item:hover .task-delete-btn {
+    opacity: 1;
+}
+
+/* hover 效果（和 week 风格一致） */
+.task-edit-btn:hover {
+    background-color: #4e5fff;
+    color: white;
+}
+
+.task-delete-btn:hover {
+    background-color: #ff4040;
+    color: white;
+}
+
+/* ---------- Add Task Button ---------- */
+
+.todo-footer {
+    margin-top: auto;
+    padding-top: 12px;
+}
+
+#add-task-btn {
+    width: 100%;
+    padding: 10px;
+    background: rgb(46, 46, 255);
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+#add-task-btn:hover {
+    background-color: #1f1fff;
+}

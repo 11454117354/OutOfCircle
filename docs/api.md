@@ -84,6 +84,16 @@ POST /api/task/create
         "week_id":"1"
     }
 
+PATCH /api/task/<task_id>/edit
+- Edit the task info
+    ```json
+    {
+        "title":"cs50 final project",
+        "ddl":"2025-12-30T12:00:00",
+        "category_id":"1",
+        "remark":"",
+    }
+
 PATCH /api/task/<task_id>/time
 - Add the start time and end time of a task
     ```json
@@ -105,7 +115,7 @@ PATCH /api/task/<task_id>/status
 - Mark the task as finished/unfinished
     ```json
     {
-        "finished": True
+        "finished": "True"
     }
 
 DELETE /api/tasks/<task_id>

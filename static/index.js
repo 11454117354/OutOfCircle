@@ -167,6 +167,9 @@
 const toggle = document.getElementById("archived-toggle");
 const archivedList = document.getElementById("archived-week-list");
 
+
+archivedList.classList.add("hidden");  // 确保列表折叠
+toggle.textContent = "Archived ▶";    // 默认显示 ▶
 toggle.addEventListener("click", () => {
     archivedList.classList.toggle("hidden");
     toggle.textContent = archivedList.classList.contains("hidden")

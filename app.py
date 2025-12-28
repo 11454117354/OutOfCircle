@@ -338,6 +338,36 @@ class CreateTask(Resource):
         db.session.commit()
         return task, 201
     
+class EditTask(Resource):
+    @login_required
+    def patch(self, task_id):
+        # Edit a task
+        task_edit_args = reqparse.RequestParser()
+        task_edit_args.add_argument('title', type=str, required=True, help="Title cannot be blank")
+        task_edit_args.add_argument('ddl', type=str, required=True, help="Deadline cannot be blank")
+        task_edit_args.add_argument('finished', type=bool, required=False, help="Enter the status of task")
+        task_edit_args.add_argument('start_time', type=str, required=False, help="Enter the start time")
+        task_edit_args.add_argument('end_time', type=str, required=False, help="Enter the end time")
+        task_edit_args.add_argument('category_id', type=str, required=True, help="Category cannot be blank")
+        task_edit_args.add_argument('remark', type=str, required=False, help="Enter remark")
+        user_id = session.get('user_id')
+        args = task_edit_args.parse_args()
+        try:
+            ddl = datetime.fromisoformat(args['ddl'])
+        except ValueError:
+            abort(400, message="Invalid datetime format")
+        category = CategoryModel.query.filter_by(id=args['category_id'], user_id=user_id).first()
+        if not category:
+            abort(404, message="Category not found")
+        task = TaskModel.query.filter_by(id=task_id, user_id=user_id).first()
+        task.title = args['title']
+        task.ddl = ddl
+        task.finished = args['finished']
+        task.category_id = args['category_id']
+        task.remark = args['remark']
+        db.session.commit()
+        return {"message": "Edit successful"}, 201
+    
 class SetTaskTime(Resource):
     @login_required
     @marshal_with(taskFields)
@@ -431,6 +461,7 @@ class DeleteTask(Resource):
         return {"message": "Task already deleted"}, 200
 
 api.add_resource(CreateTask, '/api/task/create/')
+api.add_resource(EditTask, '/api/task/<int:task_id>/edit/')
 api.add_resource(SetTaskTime, '/api/task/<int:task_id>/time/')
 api.add_resource(ViewTask, '/api/task/<int:task_id>/')
 api.add_resource(ViewWeekTask, '/api/weeks/<int:week_id>/tasks/')

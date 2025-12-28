@@ -45,6 +45,13 @@ GET /api/weeks/all
 GET /api/weeks/last
 - Get the last week the user has ever viewed
 
+PATCH /api/weeks/<week_id>/rename
+- Rename week
+    ```json
+    {
+        "name": "week3"
+    }
+
 PATCH /api/weeks/<week_id>/archived
 - Get the week archived
     ```json

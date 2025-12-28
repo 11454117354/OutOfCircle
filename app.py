@@ -211,6 +211,21 @@ class LastView(Resource):
             abort(404, message="not found")
         return {"last_week_id": user.last_week_id}
     
+class WeekRename(Resource):
+    @login_required
+    def patch(self, week_id):
+        # Get the week renamed
+        user_id = session.get('user_id')
+        week = WeekModel.query.filter_by(id=week_id, user_id=user_id).first()
+        if not week:
+            abort(404, message="Week not found")
+        week_rename_args = reqparse.RequestParser()
+        week_rename_args.add_argument('name', type=str, required=True, help="New week name cannot be blank")
+        args = week_rename_args.parse_args()
+        week.name = args['name']
+        db.session.commit()
+        return {"message": "Rename successful"}
+    
 class WeekArchive(Resource):
     @login_required
     def patch(self, week_id):
@@ -253,6 +268,7 @@ api.add_resource(ViewWeekAll, '/api/weeks/all/')
 api.add_resource(LastView, '/api/weeks/last/')
 api.add_resource(DeleteWeek, '/api/weeks/<int:week_id>/')
 api.add_resource(WeekArchive, '/api/weeks/<int:week_id>/archived')
+api.add_resource(WeekRename, '/api/weeks/<int:week_id>/rename')
 
 # ------------
 #  Task Part

@@ -8,6 +8,7 @@
 
         const weeks = await response.json();
         const weeklist = document.getElementById("week-list");
+        const archivedList = document.getElementById("archived-week-list");
 
         weeklist.innerHTML = "";
         
@@ -151,12 +152,27 @@
             li.appendChild(archiveBtn);
             li.appendChild(deleteBtn);
 
-            weeklist.appendChild(li);
+            if (week.archived) {
+                archivedList.appendChild(li);
+            } else {
+                weeklist.appendChild(li);
+            }
         });
     } catch (error) {
         console.error("Error loading weeks:", error);
     }
 })();
+
+// Fold the toggle
+const toggle = document.getElementById("archived-toggle");
+const archivedList = document.getElementById("archived-week-list");
+
+toggle.addEventListener("click", () => {
+    archivedList.classList.toggle("hidden");
+    toggle.textContent = archivedList.classList.contains("hidden")
+        ? "Archived ▶"
+        : "Archived ▼";
+});
 
 // New week popup
 const newWeekForm = document.getElementById("newWeek");

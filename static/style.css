@@ -116,8 +116,13 @@ button:hover {
 }
 
 #week-list {
-  flex: 1;               /* 关键 */
+  /* flex: 1;               关键 */
   overflow-y: auto;      /* 内容多时可滚动 */
+}
+
+#archived-week-list {
+    flex: 1;
+    overflow-y: auto;
 }
 
 .sidebar h3 {
@@ -143,6 +148,7 @@ button:hover {
 #newWeek {
   margin: 0;
   padding: 0;
+  margin-top: auto;
 }
 
 #newWeek button {
@@ -250,6 +256,22 @@ button:hover {
   opacity: 1;             /* hover 时显示 */
 }
 
+.hidden {
+    display: none;
+}
+
+.archived-toggle {
+    margin-top: 12px;
+    font-size: 0.9rem;
+    color: #666;
+    cursor: pointer;
+    user-select: none;
+}
+
+.archived-list {
+    margin-top: 4px;
+    opacity: 0.85;
+}
 
 /* 右侧 TODO 内容 */
 .todo-content {

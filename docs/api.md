@@ -127,5 +127,13 @@ GET /api/categories/<category_id>
 GET /api/categories/all
 - Get info of all categories
 
-DELETE /api/categories/<category_id>/<distination_id>
+PATCH /api/categories/<category_id>/rename
+- Rename the category
+    ```json
+    {
+        "name": "test1",
+        "color": "#2349384"
+    }
+
+DELETE /api/categories/<category_id>/<destination_id>
 - Delete a category, and choose either to put all tasks in another existing category or delete them

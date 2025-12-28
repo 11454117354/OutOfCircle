@@ -17,7 +17,11 @@
             {% elif page == 'login' %}
                 <li><a href="/register">Register</a></li>
             {% elif page == 'home' %}
-                <li><a href="/categories">Categories</a></li>
+                <li><a href="/category">Categories</a></li>
+                <li><span id="username" class="nav-username"></span></li>
+                <li><a id="logout" href="/logout">Logout</a></li>
+            {% elif page == 'category' %}
+                <li><a href="/">Home</a></li>
                 <li><span id="username" class="nav-username"></span></li>
                 <li><a id="logout" href="/logout">Logout</a></li>
             {% else %}
@@ -44,14 +48,14 @@
                 document.getElementById("username").innerText = username.username;
             } else {
                 const path = window.location.pathname;
-                if (path !== "/login" && path !== "/register") {
+                if (path !== "/login" && path !== "/register" && path !== "/category") {
                     window.location.href = "/login";
                 }
             }
         } catch(e) {
             console.error(e);
             const path = window.location.pathname;
-            if (path !== "/login" && path !== "/register") {
+            if (path !== "/login" && path !== "/register" && path !== "/category") {
                 window.location.href = "/login";
             }
         }

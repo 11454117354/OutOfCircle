@@ -485,6 +485,20 @@ class ViewAllCategory(Resource):
         categories = CategoryModel.query.filter_by(user_id=user_id).all()
         return categories
     
+class EditCategory(Resource):
+    @login_required
+    def patch(self, category_id):
+        # Get the category edited
+        user_id = session.get('user_id')
+        category = CategoryModel.query.filter_by(id=category_id, user_id=user_id).first()
+        if not category:
+            abort(404, message="Category not found")
+        args = week_args.parse_args()
+        category.name = args['name']
+        category.color = args['color']
+        db.session.commit()
+        return {"message": "Edit successful"}
+    
 class DeleteCategory(Resource):
     @login_required
     def delete(self, category_id, destination_id):
@@ -514,6 +528,7 @@ class DeleteCategory(Resource):
 api.add_resource(CreateCategory, '/api/category/create/')
 api.add_resource(ViewCategory, '/api/categories/<int:category_id>/')
 api.add_resource(ViewAllCategory, '/api/categories/all/')
+api.add_resource(EditCategory, '/api/categories/<int:category_id>/edit/')
 api.add_resource(DeleteCategory, '/api/categories/<int:category_id>/<int:destination_id>/')
 
 # --------
@@ -532,6 +547,9 @@ def login():
 def index():
     return render_template("index.html", page="home")
 
+@app.route("/category", endpoint="category_page", methods=["GET", "POST", "PATCH", "DELETE"])
+def index():
+    return render_template("category.html", page="category")
 
 # -------------------
 #  Call the Program

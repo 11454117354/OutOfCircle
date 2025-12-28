@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+
+{% block title %}Category{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <main class="single-column">
+        <h3>Categories</h3>
+
+        <ul id="category-list">
+            <!-- JS 动态填充 category -->
+        </ul>
+
+        <form id="newCategory">
+            <button type="submit">Add New Category</button>
+        </form>
+    </main>
+</div>
+
+<script src="{{ url_for('static', filename='category.js') }}"></script>
+
+{% endblock %}

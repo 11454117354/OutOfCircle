@@ -219,7 +219,9 @@ class WeekArchive(Resource):
         week = WeekModel.query.filter_by(id=week_id, user_id=user_id).first()
         if not week:
             abort(404, message="Week not found")
-        args = week_args.parse_args()
+        week_archived_args = reqparse.RequestParser()
+        week_archived_args.add_argument('archived', type=bool, required=True, help="Default: not archived")
+        args = week_archived_args.parse_args()
         if args['archived'] == False:
             week.archived = False
             db.session.commit()
@@ -250,6 +252,7 @@ api.add_resource(ViewWeek, '/api/weeks/<int:week_id>/')
 api.add_resource(ViewWeekAll, '/api/weeks/all/')
 api.add_resource(LastView, '/api/weeks/last/')
 api.add_resource(DeleteWeek, '/api/weeks/<int:week_id>/')
+api.add_resource(WeekArchive, '/api/weeks/<int:week_id>/archived')
 
 # ------------
 #  Task Part

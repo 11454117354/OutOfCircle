@@ -9,6 +9,38 @@
     <aside class="sidebar">
         <h3>Weeks</h3>
         <ul id="week-list"></ul>
+        
+        <!-- 新week按钮 -->
+        <form id="newWeek">
+            <button type="submit">Add New Week</button>
+        </form>
+
+        <!-- 新建week弹窗 -->
+        <div id="modal" class="modal">
+            <div class="modal-content">
+                <h3>Add a new week</h3>
+
+                <label>
+                    Week Name
+                    <input type="text" id="weekname" required>
+                </label>
+
+                <label>
+                    Start Time
+                    <input type="datetime-local" id="week-start" required>
+                </label>
+
+                <label>
+                    End Time
+                    <input type="datetime-local" id="week-end" required>
+                </label>
+
+                <div class="actions">
+                    <button type="button" id="cancel">Cancel</button>
+                    <button type="button" id="confirm">Confirm</button>
+                </div>
+            </div>
+        </div>
     </aside>
 
     <!-- 右侧 TODO 内容 -->

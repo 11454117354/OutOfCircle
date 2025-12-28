@@ -46,6 +46,11 @@ GET /api/weeks/last
 - Get the last week the user has ever viewed
 
 PATCH /api/weeks/<week_id>/archived
+- Get the week archived
+    ```json
+    {
+        "archived": "True"
+    }
 
 DELETE /api/weeks/<week_id>
 - Delete a week

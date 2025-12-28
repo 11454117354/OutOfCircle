@@ -181,10 +181,6 @@ class ViewWeek(Resource):
         week = WeekModel.query.filter_by(id=week_id, user_id=user_id).first()
         if not week:
             abort(404, message="Week not found")
-        # Remember "lastly_view"
-        user = UserModel.query.get(user_id)
-        user.last_week_id = week_id
-        db.session.commit()
         return week
     
 class ViewWeekAll(Resource):
@@ -196,11 +192,6 @@ class ViewWeekAll(Resource):
         weeks = WeekModel.query.filter_by(user_id=user_id).all()
         if not weeks:
             abort(404, message="Week not found")
-        # Remember "lastly_view"
-        week = WeekModel.query.filter_by(user_id=user_id).order_by(WeekModel.start_time.asc()).first()
-        user = UserModel.query.get(user_id)
-        user.last_week_id = week.id
-        db.session.commit()
         return weeks
     
 class LastView(Resource):
@@ -391,7 +382,22 @@ class SetTaskTime(Resource):
             abort(400, message="Invalid datetime format")
         db.session.commit()
         return task        
-    
+
+class FinishTask(Resource):
+    @login_required
+    def patch(self, task_id):
+        # Change the finish status of a task
+        user_id = session.get('user_id')
+        task = TaskModel.query.filter_by(id=task_id, user_id=user_id).first()
+        if not task:
+            abort(404, message="Task not found")
+        if task.finished == True:
+            task.finished = False
+        else:
+            task.finished = True
+        db.session.commit()
+        return task
+
 class ViewTask(Resource):
     @login_required
     @marshal_with(taskFields)
@@ -412,6 +418,9 @@ class ViewWeekTask(Resource):
             abort(404, message="Week not found")
         if user_id != week.user_id:
             abort(404, message="Week not found")
+        user = UserModel.query.get(user_id)
+        user.last_week_id = week_id
+        db.session.commit()
         tasks =  TaskModel.query.filter_by(week_id=week_id, user_id=user_id).order_by(TaskModel.ddl.asc()).all()
         return tasks
     

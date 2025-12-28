@@ -1,5 +1,5 @@
 // Get weeks
-(async () => {
+async function loadWeeks() {
     try {
         const response = await fetch("/api/weeks/all/", {credentials: "same-origin"});
         if (!response.ok){
@@ -148,9 +148,7 @@
             })
 
             li.addEventListener("click", () => {
-                currentWeekId = week.id;
-                document.getElementById("todo-title").innerText = `Todos · ${week.name}`;
-                loadTasksForWeek(week.id);
+                selectWeek(week.id);
             });
 
             li.appendChild(nameSpan);
@@ -167,7 +165,28 @@
     } catch (error) {
         console.error("Error loading weeks:", error);
     }
-})();
+}
+
+function selectWeek(weekId) {
+    currentWeekId = weekId;
+
+    document.getElementById("todo-title").innerText = `Todos · ${document.querySelector(`li[data-week-id="${weekId}"] span`).innerText}`;
+    loadTasksForWeek(weekId);
+}
+
+function loadLastWeek() {
+    fetch("/api/weeks/last")
+        .then(res => res.json())
+        .then(data => {
+            if (data.last_week_id) {
+                selectWeek(parseInt(data.last_week_id));
+            }
+        });
+}
+
+loadWeeks().then(() => {
+    loadLastWeek();
+});
 
 // Fold the toggle
 const toggle = document.getElementById("archived-toggle");
@@ -250,6 +269,12 @@ async function loadTasksForWeek(weekId) {
 function renderTasks(tasks) {
     const list = document.getElementById("todo-list");
     list.innerHTML = "";
+    tasks.sort((a, b) => {
+        if (a.finished !== b.finished) {
+            return Number(a.finished) - Number(b.finished);
+        }
+        return new Date(a.ddl) - new Date(b.ddl);
+    });
 
     tasks.forEach(task => {
         const item = document.createElement("div");
@@ -257,8 +282,32 @@ function renderTasks(tasks) {
         const category = categoriesCache.find(c => c.id === task.category_id);
         item.style.borderLeft = `4px solid ${category ? category.color : "#ccc"}`;
 
+        // 完成按钮
+        const checkBtn = document.createElement("div");
+        checkBtn.className = "task-check";
+        if (task.finished) {
+            checkBtn.classList.add("checked");
+        }
+
+        checkBtn.addEventListener("click", async (e) => {
+            e.stopPropagation();
+
+            await fetch(`/api/task/${task.id}/status/`, {
+                method: "PATCH",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ finished: !task.finished })
+            });
+
+            loadTasksForWeek(currentWeekId);
+        });
+
+        item.appendChild(checkBtn);
+
+        // 标题
         const title = document.createElement("span");
         title.innerText = task.title;
+        item.appendChild(title);
 
         const editBtn = document.createElement("button");
         editBtn.innerText = "E";
@@ -283,7 +332,7 @@ function renderTasks(tasks) {
             loadTasksForWeek(currentWeekId);
         };
 
-        item.append(title, editBtn, deleteBtn);
+        item.append(editBtn, deleteBtn);
         list.appendChild(item);
     });
 }

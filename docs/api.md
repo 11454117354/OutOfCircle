@@ -102,6 +102,13 @@ PATCH /api/task/<task_id>/time
         "end_time":"2025-12-29T13:00:00"
     }
 
+PATCH /api/task/<task_id>/finished
+- Change the status of finished
+    ```json
+    {
+        "finished": "True"
+    }
+
 GET /api/task/<task_id>
 - Get a certain task
 

@@ -100,6 +100,7 @@ button:hover {
     width: calc(100vw - 4rem); /* 横向间距预留 */
     max-width: 100%;           /* 防止超出屏幕 */
     min-height: calc(100vh - 10rem); /* 减去 navbar 高度 */
+    align-items: stretch;   /* ⭐ 关键：左右等高 */
 }
 
 
@@ -384,15 +385,17 @@ button:hover {
     margin-left: 4px;
     cursor: pointer;
     font-size: 0.9rem;
-    opacity: 0;
-    transition: opacity 0.2s, background-color 0.2s;
     border-radius: 4px;
+    opacity: 0;
+    pointer-events: none;   /* ⭐ 关键 */
+    transition: opacity 0.2s, background-color 0.2s;
 }
 
 /* hover task 时才显示 */
 .task-item:hover .task-edit-btn,
 .task-item:hover .task-delete-btn {
     opacity: 1;
+    pointer-events: auto;
 }
 
 /* hover 效果（和 week 风格一致） */
@@ -425,4 +428,95 @@ button:hover {
 
 #add-task-btn:hover {
     background-color: #1f1fff;
+}
+
+/* ---------- Right Todo Panel Layout Fix ---------- */
+
+.todo-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Todos 标题和第一个 task 拉开距离 */
+.todo-panel > h3 {
+    margin-bottom: 12px;
+}
+
+/* task 列表占据中间空间 */
+#todo-list {
+    flex: 1;
+    margin-top: 6px;
+    overflow-y: auto;
+}
+
+.todo-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.todo-panel > h3 {
+    margin-bottom: 12px;
+}
+
+#todo-list {
+    flex: 1;
+    margin-top: 6px;
+    overflow-y: auto;
+}
+
+.todo-footer {
+    margin-top: auto;
+}
+
+.todo-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.todo-panel > h3 {
+    margin-bottom: 12px;
+}
+
+#todo-list {
+    flex: 1;
+    margin-top: 6px;
+    overflow-y: auto;
+}
+
+.todo-footer {
+    margin-top: auto;
+}
+
+/* ---------- Task Finish Circle ---------- */
+
+.task-check {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #bbb;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.task-check.checked {
+    background-color: #4e5fff;
+    border-color: #4e5fff;
+}
+
+.task-check.checked::after {
+    content: "✓";
+    color: white;
+    font-size: 12px;
+}
+
+/* 完成后的 task */
+.task-check.checked + span {
+    text-decoration: line-through;
+    color: #999;
 }

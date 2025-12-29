@@ -3,19 +3,19 @@
 A weekly-based time management tool for tracking deadlines and scheduling work time.
 
 This project was built as my CS50 Final Project.
-I wanted to create a tool that fits my owm study habits: managing deadlines and planning word on a weekly basis rather than daily task lists.
+I wanted to create a tool that fits my own study habits: managing deadlines and planning word on a weekly basis rather than daily task lists.
 
 ## Features
 
 - User authentication
 - View tasks and deadlines by week
 - Add deadlines with due dates and estimated time
-- Assign specific time to task blocks within a week
+- Create categories of your own to classify tasks
 
 ## Tech Stack
 
 - Backend: Flask(Python)
-- Database: SQLite
+- Database: PostgreSQL
 - Frontend: HTML, CSS, Javascript, Jinja2
 - API: RESTful API
 

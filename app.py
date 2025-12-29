@@ -26,8 +26,6 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 db = SQLAlchemy(app)
-with app.app_context():
-    db.create_all()
 api = Api(app)
 
 def login_required(fn):
@@ -77,6 +75,9 @@ class CategoryModel(db.Model):
     name = db.Column(db.String(50), nullable=False)
     color = db.Column(db.String(7), nullable=False) # Hex
     user_id = db.Column(db.Integer, db.ForeignKey('user_model.id'), nullable=False)
+
+with app.app_context():
+    db.create_all()
     
 # ----------------------
 #  User Authentication

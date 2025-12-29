@@ -15,7 +15,7 @@ I wanted to create a tool that fits my own study habits: managing deadlines and 
 ## Tech Stack
 
 - Backend: Flask(Python)
-- Database: PostgreSQL
+- Database: SQLite(local) and PostgreSQL(render)
 - Frontend: HTML, CSS, Javascript, Jinja2
 - API: RESTful API
 

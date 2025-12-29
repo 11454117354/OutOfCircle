@@ -44,7 +44,7 @@ def login_required(fn):
 class UserModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
-    hash = db.Column(db.String(80))
+    hash = db.Column(db.String(255), nullable=False)
     last_week_id = db.Column(db.Integer, nullable=True)
 
     def __repr__(self):
